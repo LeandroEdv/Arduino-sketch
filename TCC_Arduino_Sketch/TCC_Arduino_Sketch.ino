@@ -42,7 +42,7 @@ int tempo_leitura_ultra = 12;
 int tempo_leitura_temperatura = 13;
 int tempo_leitura_lumi = 14; 
 int nivel_alto = 10; // NIVEL ALTO (cm)
-int nivel_baixo = 15;  // NIVEL BAIXO (cm)
+int nivel_baixo = 18;  // NIVEL BAIXO (cm)
 
 // ------------- Variaveis De controle ----------------------
 
@@ -147,7 +147,7 @@ void start(){
         }
        if (distancia > nivel_baixo){
         // NIVEL CRITICO 
-        flag_bomba_ligada = false; // <-------------SE O NIVEL FOR BAIXO PARA A BOMBA ------------------<<<<<<<<<<
+        flag_bomba_ligada = false; // <---------SE O NIVEL FOR BAIXO PARA A BOMBA -----------
         digitalWrite(led_nivel_alto, LOW);
         digitalWrite(led_nivel_baixo, LOW);
         digitalWrite(led_nivel_critico, HIGH);
@@ -156,7 +156,7 @@ void start(){
           ref_tempo_ultra = now;
         }
       } 
-// ============================================= CALCULO DE TEMPO ENTRE ACINAMENTOS DA BOMBA ==============================
+// ========================= CALCULO DE TEMPO ENTRE ACINAMENTOS DA BOMBA ==============================
 
 int tempo_para_ligar(){
 
@@ -168,12 +168,12 @@ int tempo_para_ligar(){
     return tempo_bomba_desligada;
     }
   }
-// ============================================= CALCULO DO TEMPO QUE A BOMBA FICA LIGADA ===================================
+// ======================== CALCULO DO TEMPO QUE A BOMBA FICA LIGADA ===================================
 
 
     
  
-//  ============================================= COMANDOS DA BOMBA =========================================================
+//  ======================== COMANDOS DA BOMBA =========================================================
   
   void comportamento_bomba(){
     
@@ -215,7 +215,7 @@ int tempo_para_ligar(){
         }
     }
     
-  //======================================== REFRIGERAÇÃO DA ÁGUA =============================================
+  //======================== REFRIGERAÇÃO DA ÁGUA =============================================
 
  float sen_temperatura(){
   
@@ -252,12 +252,15 @@ int tempo_para_ligar(){
      if(cont != 0 ){
       float soma;
       
-      // indice[cont] = temp;
       soma = (temp * 3) + (maxtemp + mintemp);
       result = soma /5 ;
+      cont +=1;
      } else {
       result = temp;
       }
+      if cont >= 25{
+        cont = 0;
+        }
     temperatura_media = result;
       
   Serial.print("Temperatura da agua: "); 
