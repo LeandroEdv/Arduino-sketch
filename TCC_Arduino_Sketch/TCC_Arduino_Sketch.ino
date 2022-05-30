@@ -9,7 +9,7 @@ Ultrasonic ultrasonic(pin_trigger, pin_echo); //INICIALIZA OS PINOS DOS SENSORES
 
 #include <Wire.h> //BIBLIOTECA
 #include "RTClib.h" //BIBLIOTECA
-RTC_DS1307 rtc; //OBJETO DO TIPO RTC_DS1307
+RTC_DS3231 rtc; //OBJETO DO TIPO RTC
 char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"};
 
 //---------------- INICIALIZAÇÃO DO SENSOR DE TEMPERATURA --------
@@ -104,17 +104,22 @@ void start(){
   
   void strt_rtc(){
 
-  if (! rtc.begin()) { 
-      Serial.println("DS1307 não encontrado"); 
-      while(1); 
-    }
-    if (! rtc.isrunning()) { 
-      Serial.println("DS1307 rodando!");
-      //rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); 
-      //rtc.adjust(DateTime(2022, 5, 12, 12, 41, 15)); //(ANO), (MÊS), (DIA), (HORA), (MINUTOS), (SEGUNDOS)
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
   }
-    }
-// ======================================= VERIFICAÇÃO DE NÍVEL =======================================
+
+  if (rtc.lostPower()) {
+    Serial.println("RTC lost power, lets set the time!");
+    // following line sets the RTC to the date & time this sketch was compiled
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // This line sets the RTC with an explicit date & time, for example to set
+    // January 21, 2014 at 3am you would call:
+     //rtc.adjust(DateTime(2022, 5, 30, 10, 44, 0));
+  }
+}
+    
+// ========================== VERIFICAÇÃO DE NÍVEL =======================================
 
   void ultrasonic_sen(){
     
@@ -168,11 +173,7 @@ int tempo_para_ligar(){
     return tempo_bomba_desligada;
     }
   }
-// ======================== CALCULO DO TEMPO QUE A BOMBA FICA LIGADA ===================================
 
-
-    
- 
 //  ======================== COMANDOS DA BOMBA =========================================================
   
   void comportamento_bomba(){
@@ -258,15 +259,15 @@ int tempo_para_ligar(){
      } else {
       result = temp;
       }
-      if cont >= 25{
-        cont = 0;
-        }
+      if (cont >= 25){
+          cont = 0;
+      }
     temperatura_media = result;
       
   Serial.print("Temperatura da agua: "); 
   Serial.print(temperatura_media);
   Serial.println("*C");
-  ref_tempo_temperatura = now;
+  ref_tempo_temperatura = now;40
   acionamento_refrig();
     }
   }
