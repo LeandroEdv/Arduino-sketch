@@ -144,13 +144,13 @@ void start(){
         digitalWrite(led_nivel_baixo, LOW);
         digitalWrite(led_nivel_critico, LOW);
         }
-       if (distancia > nivel_alto && distancia < nivel_baixo){
+      if (distancia > nivel_alto && distancia < nivel_baixo){
           // led indica nivel baixo
           digitalWrite(led_nivel_alto, LOW);
           digitalWrite(led_nivel_baixo, HIGH);
           digitalWrite(led_nivel_critico, LOW);
         }
-       if (distancia > nivel_baixo){
+      if (distancia > nivel_baixo){
         // NIVEL CRITICO 
         flag_bomba_ligada = false; // <---------SE O NIVEL FOR BAIXO PARA A BOMBA -----------
         digitalWrite(led_nivel_alto, LOW);
@@ -163,15 +163,15 @@ void start(){
       } 
 // ========================= CALCULO DE TEMPO ENTRE ACINAMENTOS DA BOMBA ==============================
 
-int tempo_para_ligar(){
+  int tempo_para_ligar(){
 
-  if (estado() == 1){
-  int result;
-  result = (tempo_bomba_desligada /4) + tempo_bomba_desligada;
-  return result;
-  }else {
-    return tempo_bomba_desligada;
-    }
+    if (estado() == 1){
+    int result;
+    result = (tempo_bomba_desligada /4) + tempo_bomba_desligada;
+    return result;
+    }else {
+      return tempo_bomba_desligada;
+      }
   }
 
 //  ======================== COMANDOS DA BOMBA =========================================================
@@ -267,13 +267,13 @@ int tempo_para_ligar(){
   Serial.print("Temperatura da agua: "); 
   Serial.print(temperatura_media);
   Serial.println("*C");
-  ref_tempo_temperatura = now;40
+  ref_tempo_temperatura = now;
   acionamento_refrig();
     }
   }
   void acionamento_refrig(){
     
-    if (temperatura_media >= 28.5 ){
+    if (temperatura_media >= 27.5 ){
       digitalWrite(refrig,HIGH);
       }else{
         digitalWrite(refrig,LOW);
