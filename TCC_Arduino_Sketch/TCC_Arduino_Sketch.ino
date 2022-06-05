@@ -29,6 +29,7 @@ DallasTemperature sensors(&ourWire); //BIBLIOTECA DallasTemperature UTILIZA A On
 #define refrig 8
 #define bomba 7
 #define luminaria 6
+#define auxiliar 5
 
 #define led_nivel_alto 2
 #define led_nivel_baixo 3
@@ -36,13 +37,13 @@ DallasTemperature sensors(&ourWire); //BIBLIOTECA DallasTemperature UTILIZA A On
 
 //-------------- VARIÁVEIS -----------------------------------
 
-int tempo_bomba_desligada = 21; // TEMPO EM SEGUNDOS DA BOMBA EM ESPERA (intervalos).
-int tempo_bomba_ligada = 20;  // quanto tempoa bomba permace ligada 
-int tempo_leitura_ultra = 12;
-int tempo_leitura_temperatura = 13;
-int tempo_leitura_lumi = 14; 
+int tempo_bomba_ligada = 30;  // QUANTO TEMPO A BOMBA PERMANECE LIGADA 
+int tempo_bomba_desligada = 30; // TEMPO EM SEGUNDOS DA BOMBA EM ESPERA (intervalos).
+int tempo_leitura_ultra = 15; // *** NÃO PODE SER MENOR QUE 15s ***
+int tempo_leitura_temperatura = 10;
+int tempo_leitura_lumi = 5; 
 int nivel_alto = 10; // NIVEL ALTO (cm)
-int nivel_baixo = 18;  // NIVEL BAIXO (cm)
+int nivel_baixo = 20;  // NIVEL BAIXO (cm)
 
 // ------------- Variaveis De controle ----------------------
 
@@ -92,18 +93,19 @@ void start(){
   pinMode(bomba, OUTPUT);
   pinMode(luminaria, OUTPUT);
   pinMode(refrig, OUTPUT);
+  pinMode(auxiliar, OUTPUT);
   
   pinMode(led_nivel_alto, OUTPUT);
   pinMode(led_nivel_baixo, OUTPUT);
   pinMode(led_nivel_critico, OUTPUT);
   pinMode(sen_ldr, INPUT_PULLUP);
-  
-  }
 
+}
+  
   // =================== INICIALIZAÇÃO RTC ==============================================
   
   void strt_rtc(){
-
+  
   if (! rtc.begin()) {
     Serial.println("Couldn't find RTC");
     while (1);
@@ -136,27 +138,30 @@ void start(){
     
     if (now.unixtime() >= (ref_tempo_ultra.unixtime() + tempo_leitura_ultra)){
 
-      ultrasonic_sen();
+      ultrasonic_sen();   
       Serial.println("lendo o nível da água ");
+      
       if (distancia <= nivel_alto){
-        // led que indica nivel alto  
+        
+        // NIVEL ALTO  
         digitalWrite(led_nivel_alto, HIGH);
         digitalWrite(led_nivel_baixo, LOW);
         digitalWrite(led_nivel_critico, LOW);
         }
       if (distancia > nivel_alto && distancia < nivel_baixo){
-          // led indica nivel baixo
+        
+          // NIVEL BAIXO
           digitalWrite(led_nivel_alto, LOW);
           digitalWrite(led_nivel_baixo, HIGH);
           digitalWrite(led_nivel_critico, LOW);
         }
       if (distancia > nivel_baixo){
-        // NIVEL CRITICO 
-        flag_bomba_ligada = false; // <---------SE O NIVEL FOR BAIXO PARA A BOMBA -----------
+        
+        // NIVEL CRITICO
+        flag_bomba_ligada = false; 
         digitalWrite(led_nivel_alto, LOW);
         digitalWrite(led_nivel_baixo, LOW);
         digitalWrite(led_nivel_critico, HIGH);
-     
           }
           ref_tempo_ultra = now;
         }
@@ -166,6 +171,7 @@ void start(){
   int tempo_para_ligar(){
 
     if (estado() == 1){
+      
     int result;
     result = (tempo_bomba_desligada /4) + tempo_bomba_desligada;
     return result;
@@ -182,9 +188,10 @@ void start(){
         
     if (now.unixtime() >= (ref_tempo_liga.unixtime() + tempo_para_ligar()) && flag_bomba_ligada == false ){
       
-      if (flag_sen == false){
-       ultrasonic_sen(); // <------- VERIFICAR O SENSOR ULTRASÔNICO ANTES DE LIGAR A BOMBA ----<<<<
-       Serial.println("Leitura de verificação da bomba");
+      if (flag_sen == false){ 
+      ultrasonic_sen(); // <------- VERIFICAR O SENSOR ULTRASÔNICO ANTES DE LIGAR A BOMBA ----<<<<
+       
+      Serial.println("Leitura de verificação da bomba");
        flag_sen = true;
       }
       
@@ -205,14 +212,16 @@ void start(){
       }  
   }
 
-  void acionamento_bomba(){ // < ------------- comando de acionamento da bomba -------<<<<
+  void acionamento_bomba(){ 
   
     comportamento_bomba();
     
      if (flag_bomba_ligada == true){
-        digitalWrite(bomba, HIGH);
-    }else {
+      //  digitalWrite(bomba, HIGH);
          digitalWrite(bomba, LOW);
+    }else {
+        // digitalWrite(bomba, LOW);
+         digitalWrite(bomba, HIGH);
         }
     }
     
@@ -259,7 +268,7 @@ void start(){
      } else {
       result = temp;
       }
-      if (cont >= 25){
+      if (cont >= 10){
           cont = 0;
       }
     temperatura_media = result;
@@ -274,10 +283,13 @@ void start(){
   void acionamento_refrig(){
     
     if (temperatura_media >= 27.5 ){
-      digitalWrite(refrig,HIGH);
+     // digitalWrite(refrig,HIGH);
+      digitalWrite(refrig,LOW);
+      digitalWrite(auxiliar,LOW);
       }else{
-        digitalWrite(refrig,LOW);
-        
+        //digitalWrite(refrig,LOW);
+        digitalWrite(refrig,HIGH);
+        digitalWrite(auxiliar,HIGH);
         }
     }
 //  ============================= CONTROLE DA ILUMINAÇÃO ============================================
@@ -285,11 +297,11 @@ void start(){
 int estado(){
    if (now.hour() >= 5 && now.hour() < 18){
        // Serial.print("Dia ");
-     return 0;
+     return 1;
         }
    if(now.hour() >= 18  && now.hour() < 5){
          // Serial.print("Noite ");
-      return 1;
+      return 0;
           }
       }
       
@@ -304,20 +316,20 @@ void comportamento_luminaria(){
 
 if (now.unixtime() >= (ref_tempo_lumi.unixtime() + tempo_leitura_lumi)){ 
 
-  Serial.print(tempo_para_ligar());
- if (sensor_ldr() <= 300 && estado() == 0){
+ if (sensor_ldr() <= 500 && estado() == 0){
   
    // luminosidade alta
-   digitalWrite(luminaria, LOW);
+  // digitalWrite(luminaria, LOW);
+   digitalWrite(luminaria, HIGH);
    Serial.println("Luz desligada");
   } 
- if (sensor_ldr() > 300 && estado()== 0){
+ if (sensor_ldr() > 500 && estado()== 0){
   Serial.println("Luz Ligada !!");
-  digitalWrite(luminaria, HIGH);
+  //digitalWrite(luminaria, HIGH);
+  digitalWrite(luminaria, LOW);
    // luminosidade baixa
   } 
   if (estado()== 1){
-    
      digitalWrite(luminaria, LOW);
     }
   ref_tempo_lumi = now;  
