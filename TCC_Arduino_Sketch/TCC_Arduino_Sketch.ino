@@ -41,7 +41,7 @@ int tempo_bomba_ligada = 30;  // QUANTO TEMPO A BOMBA PERMANECE LIGADA
 int tempo_bomba_desligada = 30; // TEMPO EM SEGUNDOS DA BOMBA EM ESPERA (intervalos).
 int tempo_leitura_ultra = 15; // *** NÃO PODE SER MENOR QUE 15s ***
 int tempo_leitura_temperatura = 10;
-int tempo_leitura_lumi = 5; 
+int tempo_leitura_lumi = 9; 
 int nivel_alto = 10; // NIVEL ALTO (cm)
 int nivel_baixo = 20;  // NIVEL BAIXO (cm)
 
@@ -68,6 +68,10 @@ void setup() {
 
   start();
   strt_rtc();
+  digitalWrite(bomba, HIGH);
+  digitalWrite(refrig, HIGH);
+  digitalWrite(luminaria, HIGH);
+  digitalWrite(auxiliar, HIGH);
 
 }
 void loop() {  
@@ -295,13 +299,13 @@ void start(){
 //  ============================= CONTROLE DA ILUMINAÇÃO ============================================
 
 int estado(){
-   if (now.hour() >= 5 && now.hour() < 18){
+   if (now.hour() >= 5 && now.hour() < 17){
        // Serial.print("Dia ");
-     return 1;
+     return 0;
         }
-   if(now.hour() >= 18  && now.hour() < 5){
+   if(now.hour() >= 17  && now.hour() < 5){
          // Serial.print("Noite ");
-      return 0;
+      return 1;
           }
       }
       
@@ -314,24 +318,35 @@ float sensor_ldr(){
   
 void comportamento_luminaria(){
 
-if (now.unixtime() >= (ref_tempo_lumi.unixtime() + tempo_leitura_lumi)){ 
+static bool luz = false;
 
- if (sensor_ldr() <= 500 && estado() == 0){
-  
-   // luminosidade alta
-  // digitalWrite(luminaria, LOW);
-   digitalWrite(luminaria, HIGH);
-   Serial.println("Luz desligada");
-  } 
- if (sensor_ldr() > 500 && estado()== 0){
-  Serial.println("Luz Ligada !!");
-  //digitalWrite(luminaria, HIGH);
-  digitalWrite(luminaria, LOW);
-   // luminosidade baixa
-  } 
-  if (estado()== 1){
-     digitalWrite(luminaria, LOW);
-    }
-  ref_tempo_lumi = now;  
+if (now.unixtime() >= (ref_tempo_lumi.unixtime() + tempo_leitura_lumi )){ 
+ Serial.print ("Lendo Ldr ");
+ Serial.println(sensor_ldr());
+
+    if (estado()== 0){
+
+   if (sensor_ldr() < 599.00 ){
+    
+     // luminosidade alta
+    //digitalWrite(luminaria, LOW);
+    digitalWrite(luminaria, HIGH);
+    Serial.println("Luz desligada");
+    } 
+   if (sensor_ldr() > 600.00 ){
+    
+    Serial.println("Luz Ligada !!");
+    
+      digitalWrite(luminaria, LOW);
+     // luminosidade baixa
+    } 
+      }else {
+        
+        digitalWrite(luminaria, HIGH);
+   Serial.print("Noite");
+        
+        
+        }
+    ref_tempo_lumi = now;   
  }
 }
