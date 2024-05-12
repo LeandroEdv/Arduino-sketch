@@ -72,7 +72,6 @@ void setup() {
   digitalWrite(refrig, HIGH);
   digitalWrite(luminaria, HIGH);
   digitalWrite(auxiliar, HIGH);
-
 }
 void loop() {  
 
@@ -103,11 +102,9 @@ void start(){
   pinMode(led_nivel_baixo, OUTPUT);
   pinMode(led_nivel_critico, OUTPUT);
   pinMode(sen_ldr, INPUT_PULLUP);
+}  
+  // ============== INICIALIZAÇÃO RTC ==================
 
-}
-  
-  // =================== INICIALIZAÇÃO RTC ==============================================
-  
   void strt_rtc(){
   
   if (! rtc.begin()) {
@@ -125,7 +122,7 @@ void start(){
   }
 }
     
-// ========================== VERIFICAÇÃO DE NÍVEL =======================================
+// ================ VERIFICAÇÃO DE NÍVEL ==================
 
   void ultrasonic_sen(){
     
@@ -170,7 +167,7 @@ void start(){
           ref_tempo_ultra = now;
         }
       } 
-// ========================= CALCULO DE TEMPO ENTRE ACINAMENTOS DA BOMBA ==============================
+// ============= CALCULO DE TEMPO ENTRE ACINAMENTOS DA BOMBA ================
 
   int tempo_para_ligar(){
 
@@ -184,7 +181,7 @@ void start(){
       }
   }
 
-//  ======================== COMANDOS DA BOMBA =========================================================
+//  ===================== COMANDOS DA BOMBA ====================
   
   void comportamento_bomba(){
     
@@ -204,7 +201,7 @@ void start(){
       Serial.println(" Bomba ligada !");
       flag_bomba_ligada = true; // <----- ESSE FLAG FAZ A BOMBA LIGAR! ---<<<<<
       ref_tempo_desliga = now;
-      flag_sen = false; // <---- ESSE FLAG INDICA UMA LEITURA DO SENSOR ---<<<<
+      flag_sen = false;  // <---- ESSE FLAG INDICA UMA LEITURA DO SENSOR ---<<<<
         }
       }
       
@@ -296,7 +293,7 @@ void start(){
         digitalWrite(auxiliar,HIGH);
         }
     }
-//  ============================= CONTROLE DA ILUMINAÇÃO ============================================
+//  ================== CONTROLE DA ILUMINAÇÃO ==============================
 
 int estado(){
    if (now.hour() >= 5 && now.hour() < 17){
@@ -340,12 +337,10 @@ if (now.unixtime() >= (ref_tempo_lumi.unixtime() + tempo_leitura_lumi )){
       digitalWrite(luminaria, LOW);
      // luminosidade baixa
     } 
-      }else {
+      }else{
         
         digitalWrite(luminaria, HIGH);
    Serial.print("Noite");
-        
-        
         }
     ref_tempo_lumi = now;   
  }
