@@ -1,18 +1,18 @@
-// ----------- INICIALIZAÇÃO DO SENSOR ULTRASÔNICO ----------
+// ---- INICIALIZAÇÃO DO SENSOR ULTRASÔNICO ----
 
 #include "Ultrasonic.h" // BIBLIOTECA
 #define pin_trigger 11
 #define pin_echo 10
 Ultrasonic ultrasonic(pin_trigger, pin_echo); //INICIALIZA OS PINOS DOS SENSORES
 
-//---------------- INICIALIZAÇÃO RTC -------------------------
+// ---- INICIALIZAÇÃO RTC ----
 
 #include <Wire.h> //BIBLIOTECA
 #include "RTClib.h" //BIBLIOTECA
 RTC_DS3231 rtc; //OBJETO DO TIPO RTC
 char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"};
 
-//---------------- INICIALIZAÇÃO DO SENSOR DE TEMPERATURA --------
+// ---- INICIALIZAÇÃO DO SENSOR DE TEMPERATURA ----
 
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -20,11 +20,11 @@ char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta",
 OneWire ourWire(DS18B20); //CONFIGURA UMA INSTÂNCIA ONEWIRE PARA SE COMUNICAR COM O SENSOR
 DallasTemperature sensors(&ourWire); //BIBLIOTECA DallasTemperature UTILIZA A OneWire
 
-// -------------- INICIALIZAÇÃO DO SENSOR LDR -------------------
+// ---- INICIALIZAÇÃO DO SENSOR LDR ----
 
 #define sen_ldr A1
 
-//------------- INICIALIZA OS PIN-----------------------------
+// ---- INICIALIZA OS PIN ----
 
 #define refrig 8
 #define bomba 7
@@ -35,7 +35,7 @@ DallasTemperature sensors(&ourWire); //BIBLIOTECA DallasTemperature UTILIZA A On
 #define led_nivel_baixo 3
 #define led_nivel_critico 4
 
-//-------------- VARIÁVEIS -----------------------------------
+// ---- VARIÁVEIS ----
 
 int tempo_bomba_ligada = 30;  // QUANTO TEMPO A BOMBA PERMANECE LIGADA 
 int tempo_bomba_desligada = 30; // TEMPO EM SEGUNDOS DA BOMBA EM ESPERA (intervalos).
@@ -45,7 +45,7 @@ int tempo_leitura_lumi = 9;
 int nivel_alto = 10; // NIVEL ALTO (cm)
 int nivel_baixo = 20;  // NIVEL BAIXO (cm)
 
-// ------------- Variaveis De controle ----------------------
+// ---- Variaveis De controle ----
 
 int distancia;
 static bool flag_bomba_ligada;
